@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
@@ -24,10 +28,12 @@ public class Robot extends TimedRobot {
 
 
   XboxController controller = new XboxController(0);
-  VictorSP frontleftVictorSP = new VictorSP(0);
-  VictorSP backleftVictorSP = new VictorSP(1);
-VictorSP frontrightVictorSP = new VictorSP(2);
-VictorSP backrightVictorSP = new VictorSP(3);
+
+  WPI_TalonSRX  frontLeft = new WPI_TalonSRX(2);
+  WPI_TalonSRX  frontRight = new WPI_TalonSRX(1);
+  WPI_VictorSPX backLeft = new WPI_VictorSPX(4);
+  WPI_VictorSPX backRight = new WPI_VictorSPX(3);
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -38,6 +44,14 @@ VictorSP backrightVictorSP = new VictorSP(3);
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    backLeft.follow(frontLeft);
+    backRight.follow(frontRight);
+
+    frontLeft.setInverted(true);
+    backLeft.setInverted(InvertType.FollowMaster);
+    frontRight.setInverted(false);
+    backRight.setInverted(InvertType.FollowMaster);
   }
 
   /**
@@ -73,6 +87,8 @@ VictorSP backrightVictorSP = new VictorSP(3);
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
+        frontLeft.set(-0.2);
+        frontRight.set(-0.2);
         break;
       case kDefaultAuto:
       default:
@@ -88,16 +104,20 @@ VictorSP backrightVictorSP = new VictorSP(3);
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+   
 
-    double leftspeed = controller.getRawAxis(0);
-    double rightspeed = controller.getRawAxis(1);
+    double leftspeed = controller.getRawAxis(1);
+    double rightspeed = controller.getRawAxis(5);
 
-    frontleftVictorSP.set(leftspeed);
-    backleftVictorSP.set(leftspeed);
+    boolean isShifted = controller.getRawButton(1);
+    if(isShifted == true){
+      leftspeed = leftspeed * 0.2;
+      rightspeed = rightspeed * 0.2;
+    }
 
-    frontrightVictorSP.set(rightspeed);
-    backrightVictorSP.set(rightspeed);
 
+    frontLeft.set(leftspeed);
+    frontRight.set(rightspeed);
   }
 
   /** This function is called once when the robot is disabled. */
