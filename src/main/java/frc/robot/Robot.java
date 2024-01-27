@@ -86,9 +86,23 @@ public class Robot extends TimedRobot {
     autoStartTime = Timer.getFPGATimestamp();
   }
 
+  // function called drive_robot
+  // we give it the left and right speeds
+  // to use it type: drive_robot(somespeedvalue, someotherspeedvalue);
   public void drive_robot(double leftspeed, double rightspeed){
     frontLeft.set(leftspeed);
     frontRight.set(rightspeed);
+  }
+
+  public void drive_straight_auto(double timetodrive, double speed){
+        double currentTime = Timer.getFPGATimestamp();
+        double stopTime = autoStartTime + timetodrive;
+        // check if its been 5 seconds since auto started
+        if(currentTime < stopTime){
+          drive_robot(speed, speed);
+        } else{
+          drive_robot(0, 0);
+        }
   }
 
   /** This function is called periodically during autonomous. */
@@ -97,20 +111,8 @@ public class Robot extends TimedRobot {
     switch (m_autoSelected) {
       case kCustomAuto:
         // START AUTO CODE
-        double currentTime = Timer.getFPGATimestamp();
-        double stopTime = autoStartTime + 5;
-        // check if its been 5 seconds since auto started
-        if(currentTime < stopTime){
-          // drive robot at 20% speed
-          frontLeft.set(-0.2);
-          frontRight.set(-0.2);
 
-        } else{
-
-          frontLeft.set(0);
-          backLeft.set(0);
-
-        }
+        drive_straight_auto(3, 0.2);
 
         // END AUTO CODE
         break;
