@@ -14,8 +14,6 @@ public class Drive extends SubsystemBase {
     private WPI_VictorSPX backLeft = new WPI_VictorSPX(4);
     private WPI_VictorSPX backRight = new WPI_VictorSPX(3);
 
-    private final DifferentialDrive _diffDrive = new DifferentialDrive(frontLeft, frontRight);
-
     public Drive(){
 
         backLeft.follow(frontLeft);
@@ -25,11 +23,6 @@ public class Drive extends SubsystemBase {
         backLeft.setInverted(InvertType.FollowMaster);
         frontRight.setInverted(false);
         backRight.setInverted(InvertType.FollowMaster);
-
     }
-
-    public void arcadeDrive(double fwd, double rot) {
-        _diffDrive.arcadeDrive(fwd, rot);
-      }
     
 }
