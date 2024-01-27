@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -33,6 +34,8 @@ public class Robot extends TimedRobot {
   WPI_TalonSRX  frontRight = new WPI_TalonSRX(1);
   WPI_VictorSPX backLeft = new WPI_VictorSPX(4);
   WPI_VictorSPX backRight = new WPI_VictorSPX(3);
+
+  double autoStartTime;
 
 
   /**
@@ -79,6 +82,13 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+
+    autoStartTime = Timer.getFPGATimestamp();
+  }
+
+  public void drive_robot(double leftspeed, double rightspeed){
+    frontLeft.set(leftspeed);
+    frontRight.set(rightspeed);
   }
 
   /** This function is called periodically during autonomous. */
@@ -86,9 +96,23 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
       case kCustomAuto:
-        // Put custom auto code here
-        frontLeft.set(-0.2);
-        frontRight.set(-0.2);
+        // START AUTO CODE
+        double currentTime = Timer.getFPGATimestamp();
+        double stopTime = autoStartTime + 5;
+        // check if its been 5 seconds since auto started
+        if(currentTime < stopTime){
+          // drive robot at 20% speed
+          frontLeft.set(-0.2);
+          frontRight.set(-0.2);
+
+        } else{
+
+          frontLeft.set(0);
+          backLeft.set(0);
+
+        }
+
+        // END AUTO CODE
         break;
       case kDefaultAuto:
       default:
